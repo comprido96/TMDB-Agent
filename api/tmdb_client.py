@@ -14,6 +14,7 @@ class TMDBClient:
         "search_movie": "/search/movie",
         "discover_movies": "/discover/movie",
         "search_person": "/search/person",
+        "movie_certifications": "/certification/movie/list",
     }
 
     def __init__(self):

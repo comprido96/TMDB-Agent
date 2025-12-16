@@ -1,22 +1,19 @@
 from typing import Dict, Any, List, Optional
-from datetime import datetime
 
 
 class ResponseParser:
     def parse_response(self, endpoint: str, api_response: Dict[str, Any]) -> Dict[str, Any]:
         """Parse and normalize API response"""
 
-        if endpoint in ["search_movie", "discover_movies"]:
+        if endpoint == "search_movie":
             movies = self._normalize_movies_list(api_response)
             return {
                 "movies": movies,
                 "total_results": api_response.get("total_results", 0),
                 "page": api_response.get("page", 1)
             }
-        
         elif endpoint == "movie_details":
             return self._normalize_movie(api_response)
-        
         elif endpoint == "search_person":
             persons = api_response.get("results", [])
             normalized = []
@@ -26,10 +23,7 @@ class ResponseParser:
                 "persons": normalized,
                 "total_results": api_response.get("total_results", 0)
             }
-        
-        elif endpoint == "genre_list":
-            return api_response
-        
+
         return api_response
 
     def _normalize_movie(self, movie_data: Dict[str, Any]) -> Dict[str, Any]:

@@ -18,6 +18,7 @@ class APIDecision(BaseModel):
         "search_movie",
         "discover_movies", 
         "search_person",
+        "movie_certifications",
     ]
     reasoning: str
 
@@ -30,6 +31,7 @@ class RouterAgent:
         - search_movie: When user wants to search movies by title
         - discover_movies: When user wants movies with filters (genre, year, actor, etc.)
         - search_person: When user wants to find a person/actor
+        - movie_certifications: Get an up to date list of the officially supported movie certifications on TMDB.
 
         Return your decision in JSON format following this schema:
         {
