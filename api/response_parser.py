@@ -3,7 +3,36 @@ from datetime import datetime
 
 
 class ResponseParser:
-    def normalize_movie(self, movie_data: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_response(self, endpoint: str, api_response: Dict[str, Any]) -> Dict[str, Any]:
+        """Parse and normalize API response"""
+
+        if endpoint in ["search_movie", "discover_movies"]:
+            movies = self._normalize_movies_list(api_response)
+            return {
+                "movies": movies,
+                "total_results": api_response.get("total_results", 0),
+                "page": api_response.get("page", 1)
+            }
+        
+        elif endpoint == "movie_details":
+            return self._normalize_movie(api_response)
+        
+        elif endpoint == "search_person":
+            persons = api_response.get("results", [])
+            normalized = []
+            for person in persons[:3]:
+                normalized.append(self._normalize_person(person))
+            return {
+                "persons": normalized,
+                "total_results": api_response.get("total_results", 0)
+            }
+        
+        elif endpoint == "genre_list":
+            return api_response
+        
+        return api_response
+
+    def _normalize_movie(self, movie_data: Dict[str, Any]) -> Dict[str, Any]:
         """Normalize movie data to consistent schema"""
         return {
             "id": movie_data.get("id"),
@@ -16,17 +45,17 @@ class ResponseParser:
             "poster_path": f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path', '')}" if movie_data.get("poster_path") else None
         }
 
-    def normalize_movies_list(self, api_response: Dict[str, Any], limit: int = 5) -> List[Dict[str, Any]]:
+    def _normalize_movies_list(self, api_response: Dict[str, Any], limit: int = 5) -> List[Dict[str, Any]]:
         """Normalize list of movies"""
         movies = api_response.get("results", [])
         normalized = []
         
         for movie in movies[:limit]:
-            normalized.append(self.normalize_movie(movie))
+            normalized.append(self._normalize_movie(movie))
         
         return normalized
 
-    def normalize_person(self, person_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _normalize_person(self, person_data: Dict[str, Any]) -> Dict[str, Any]:
         """Normalize person data"""
         return {
             "id": person_data.get("id"),

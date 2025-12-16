@@ -1,15 +1,15 @@
-from agents.router_agent import RouterAgent, APIDecision
+from agents.router_agent import APIDecision, RouterAgent
 from agents.param_extractor import ParameterExtractor, ExtractedParams
 from api.tmdb_client import TMDBClient
 from api.response_parser import ResponseParser
-from agents.answer_generator import AnswerGenerator, StructuredAnswer
+from agents.answer_generator import AnswerGenerator
 from typing import Dict, Any
 import json
 
 
 class TMDBMovieAgent:
     """Main orchestrator for the multi-agent pipeline"""
-    
+
     def __init__(self):
         self.router = RouterAgent()
         self.extractor = ParameterExtractor()
@@ -19,12 +19,12 @@ class TMDBMovieAgent:
 
     def process_query(self, user_query: str) -> Dict[str, Any]:
         """Process user query through the full pipeline"""
-        
+
         print(f"\n🔍 Processing query: '{user_query}'")
 
         # Step 1: Router Agent
         print("1️⃣ Router Agent: Determining endpoint...")
-        decision = self.router.route(user_query)
+        decision: APIDecision = self.router.route(user_query)
         print(f"   Decision: {decision.endpoint}")
         print(f"   Reasoning: {decision.reasoning}")
 
@@ -35,11 +35,14 @@ class TMDBMovieAgent:
 
         # Step 3: API Execution
         print("3️⃣ API Executor: Calling TMDB API...")
-        api_response = self._execute_api_call(decision.endpoint, params)
+        api_response = self.tmdb_client.make_request(decision.endpoint, params)
+        # api_response = self._execute_api_call(decision.endpoint, params)
+        print(f"   API Response:\n{api_response}")
 
         # Step 4: Response Parsing
         print("4️⃣ Response Parser: Normalizing data...")
-        normalized_data = self._parse_response(decision.endpoint, api_response)
+        normalized_data = self.parser.parse_response(decision.endpoint, api_response)
+        print(f"   Normalized Data:\n{normalized_data}")
 
         # Step 5: Answer Generation
         print("5️⃣ Answer Generator: Creating structured answer...")
@@ -48,6 +51,7 @@ class TMDBMovieAgent:
             normalized_data, 
             decision.endpoint
         )
+        print(f"   Final Answer:\n{final_answer.model_dump()}")
 
         return {
             "query": user_query,
@@ -56,76 +60,6 @@ class TMDBMovieAgent:
             "api_response_sample": normalized_data[:2] if isinstance(normalized_data, list) else normalized_data,
             "final_answer": final_answer.model_dump()
         }
-
-    def _execute_api_call(self, endpoint: str, params: ExtractedParams) -> Dict[str, Any]:
-        """Execute the appropriate API call"""
-        
-        if endpoint == "search_movie":
-            return self.tmdb_client.search_movie(query=params.query or "")
-
-        elif endpoint == "discover_movies":
-            api_params = {}
-            if params.year:
-                api_params["primary_release_year"] = params.year
-            if params.with_genres:
-                api_params["with_genres"] = params.with_genres
-            
-            # Handle person search if needed
-            if params.person_name:
-                person_result = self.tmdb_client.search_person(params.person_name)
-                person_id = self.parser.extract_person_id(person_result)
-                if person_id:
-                    api_params["with_people"] = person_id
-            
-            return self.tmdb_client.discover_movies(**api_params)
-
-        elif endpoint == "search_person":
-            return self.tmdb_client.search_person(query=params.query or params.person_name or "")
-        
-        elif endpoint == "movie_details":
-            if params.movie_id:
-                return self.tmdb_client.movie_details(params.movie_id)
-            # Fallback: search for movie first
-            search_result = self.tmdb_client.search_movie(query=params.query or "")
-            if search_result.get("results"):
-                movie_id = search_result["results"][0]["id"]
-                return self.tmdb_client.movie_details(movie_id)
-            return {"error": "Movie not found"}
-        
-        elif endpoint == "genre_list":
-            return self.tmdb_client.get_genres()
-        
-        else:
-            raise ValueError(f"Unknown endpoint: {endpoint}")
-
-    def _parse_response(self, endpoint: str, api_response: Dict[str, Any]) -> Dict[str, Any]:
-        """Parse and normalize API response"""
-
-        if endpoint in ["search_movie", "discover_movies"]:
-            movies = self.parser.normalize_movies_list(api_response)
-            return {
-                "movies": movies,
-                "total_results": api_response.get("total_results", 0),
-                "page": api_response.get("page", 1)
-            }
-        
-        elif endpoint == "movie_details":
-            return self.parser.normalize_movie(api_response)
-        
-        elif endpoint == "search_person":
-            persons = api_response.get("results", [])
-            normalized = []
-            for person in persons[:3]:
-                normalized.append(self.parser.normalize_person(person))
-            return {
-                "persons": normalized,
-                "total_results": api_response.get("total_results", 0)
-            }
-        
-        elif endpoint == "genre_list":
-            return api_response
-        
-        return api_response
 
 
 if __name__ == "__main__":

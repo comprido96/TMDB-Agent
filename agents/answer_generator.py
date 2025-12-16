@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
 
+from agents.base import create_completion
+
 load_dotenv()
 
 
@@ -46,19 +48,8 @@ class AnswerGenerator:
         
         Generate a helpful answer based on this data.
         """
-
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo-1106",
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3
-        )
-        
-        result = json.loads(response.choices[0].message.content)
-        return StructuredAnswer(**result)
+        response = create_completion(client, system_prompt=self.system_prompt, user_prompt=prompt)
+        return StructuredAnswer(**response)
 
 
 if __name__ == "__main__":
