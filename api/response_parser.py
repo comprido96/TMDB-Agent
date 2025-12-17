@@ -12,8 +12,13 @@ class ResponseParser:
                 "total_results": api_response.get("total_results", 0),
                 "page": api_response.get("page", 1)
             }
-        elif endpoint == "movie_details":
-            return self._normalize_movie(api_response)
+        elif endpoint == "discover_movies":
+            movies = self._normalize_movies_list(api_response)
+            return {
+                "movies": movies,
+                "total_results": api_response.get("total_results", 0),
+                "page": api_response.get("page", 1)
+            }
         elif endpoint == "search_person":
             persons = api_response.get("results", [])
             normalized = []
@@ -21,10 +26,15 @@ class ResponseParser:
                 normalized.append(self._normalize_person(person))
             return {
                 "persons": normalized,
-                "total_results": api_response.get("total_results", 0)
+                "total_results": api_response.get("total_results", 0),
+                "page": api_response.get("page", 1)
             }
 
-        return api_response
+        # fallback schema
+        return {
+            "raw": api_response,
+            "note": "No normalization applied for this endpoint"
+        }
 
     def _normalize_movie(self, movie_data: Dict[str, Any]) -> Dict[str, Any]:
         """Normalize movie data to consistent schema"""
@@ -61,13 +71,6 @@ class ResponseParser:
                 for item in person_data.get("known_for", [])[:3]
             ]
         }
-
-    def extract_person_id(self, api_response: Dict[str, Any]) -> Optional[int]:
-        """Extract person ID from search results"""
-        results = api_response.get("results", [])
-        if results:
-            return results[0].get("id")
-        return None
 
 
 if __name__ == "__main__":

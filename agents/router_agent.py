@@ -1,5 +1,5 @@
 from openai import OpenAI
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from typing import Literal
 from dotenv import load_dotenv
 import os
@@ -45,7 +45,14 @@ class RouterAgent:
     def route(self, user_query: str) -> APIDecision:
         """Determine which API endpoint to call"""
         response = create_completion(client, system_prompt=self.system_prompt, user_prompt=user_query)
-        return APIDecision(**response)
+        try:
+            return APIDecision(**response)
+        except ValidationError:
+            return APIDecision(
+                endpoint="search_movie",
+                reasoning="Fallback due to invalid model output"
+            )
+
 
 
 if __name__ == "__main__":

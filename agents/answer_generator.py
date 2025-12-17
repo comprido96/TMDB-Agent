@@ -1,7 +1,7 @@
 from openai import OpenAI
 from typing import Dict, Any, List
 import json
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from dotenv import load_dotenv
 import os
 
@@ -36,7 +36,7 @@ class AnswerGenerator:
             "source": "TMDB API",
             "confidence": <confidence_score_between_0_and_1>
         }
-        Be factual and only use information from the provided data. Remember that we are in year 2025 currently."""
+        Be factual and only use information from the provided data. Do not use prior knowledge. Remember that we are in year 2025 currently."""
 
     def generate_answer(self, user_query: str, api_data: Dict[str, Any], endpoint: str) -> StructuredAnswer:
         """Generate structured final answer"""
@@ -49,7 +49,10 @@ class AnswerGenerator:
         Generate a helpful answer based on this data.
         """
         response = create_completion(client, system_prompt=self.system_prompt, user_prompt=prompt)
-        return StructuredAnswer(**response)
+        try:
+            return StructuredAnswer(**response)
+        except ValidationError as e:
+            raise RuntimeError(f"Invalid LLM output schema: {e}")
 
 
 if __name__ == "__main__":

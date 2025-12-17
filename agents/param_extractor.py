@@ -1,3 +1,30 @@
+"""
+TODO
+1. Mismatch between extracted fields and TMDB API
+
+Example:
+
+with_people: Optional[str]  # names
+
+
+But TMDB /discover/movie expects person IDs, not names.
+
+You partially acknowledge this elsewhere, but here the pipeline still leaks names downstream.
+
+This is the single biggest technical flaw in the agents layer.
+
+Best fix (recommended)
+
+Rename field to with_people_names
+
+Resolve names → IDs in a dedicated resolution step
+
+Only inject IDs into tmdb_client
+
+If you don’t implement it, document it clearly as a known limitation.
+"""
+
+
 from openai import OpenAI
 from pydantic import BaseModel
 from typing import Literal, Optional
@@ -27,12 +54,9 @@ GENRE_MAP = {
 class ExtractedParams(BaseModel):
     """Schema for extracted parameters"""
     query: Optional[str] = None
-    year: Optional[int] = None
     primary_release_year: Optional[int] = None
-    genre: Optional[str] = None
-    person_name: Optional[str] = None
-    movie_id: Optional[int] = None
     with_genres: Optional[str] = None
+    with_people_names: Optional[str] = None
     with_people: Optional[str] = None
     sort_by: Optional[str] = None
 
@@ -54,7 +78,9 @@ class SearchMovieAgent:
     def extract(self, user_query: str) -> ExtractedParams:
         """Extract parameters for /search/movie endpoint"""
         response = create_completion(client, system_prompt=self.system_prompt, user_prompt=user_query)
-        return ExtractedParams(**response)
+
+        # minimal safeguard
+        return ExtractedParams.model_validate(response, strict=False)
 
 
 class DiscoverMoviesAgent:
@@ -62,8 +88,8 @@ class DiscoverMoviesAgent:
         self.system_prompt = """You are a parameter extraction agent for TMDB API calls to /discover/movie.
         Your job is to extract relevant parameters from user queries. The parameters to extract are:
         - primary_release_year: The release year of the movies (if mentioned)
-        - with_genres: The genres of the movies (if mentioned)
-        - with_people: The name of actors/actresses (if mentioned)
+        - with_genres: The genres of the movies (if mentioned), separated by commas
+        - with_people: The name of actors/actresses (if mentioned), separated by commas
 
         Return the extracted parameters in JSON format following this schema:
         {
@@ -85,7 +111,16 @@ class DiscoverMoviesAgent:
                 if genre in GENRE_MAP:
                     genre_ids.append(str(GENRE_MAP[genre]))
             response["with_genres"] = ",".join(genre_ids)
-        return ExtractedParams(**response)
+
+        # minimal safeguard
+        return ExtractedParams.model_validate(
+            {
+                "primary_release_year": response.get("primary_release_year"),
+                "with_genres": response.get("with_genres"),
+                "with_people_names": response.get("with_people"),
+            },
+            strict=False
+        )
 
 
 class SearchPersonAgent:
@@ -102,7 +137,9 @@ class SearchPersonAgent:
     def extract(self, user_query: str) -> ExtractedParams:
         """Extract parameters for /search/person endpoint"""
         response = create_completion(client, system_prompt=self.system_prompt, user_prompt=user_query)
-        return ExtractedParams(**response)
+
+        # minimal safeguard
+        return ExtractedParams.model_validate(response, strict=False)
 
 
 EXTRACTORS = {
@@ -130,7 +167,7 @@ class ParameterExtractor:
         # Extract year using regex
         year_match = re.search(r'\b(20\d{2}|19\d{2})\b', user_query)
         if year_match:
-            params.year = int(year_match.group())
+            params.primary_release_year = int(year_match.group())
 
         # Extract genre
         query_lower = user_query.lower()
