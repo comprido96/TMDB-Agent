@@ -61,28 +61,33 @@ API Gateway → Lambda (TMDBMovieAgent) → OpenAI + TMDB APIs
 
 ## Fine-tuning/Model Adaptation Strategy
 Fine-tuning is **not performed by default** and would be introduced incrementally:
-1. Prompt engineering first
+1. **Prompt engineering first**
+
 Adjust router and extractor prompts based on observed failures.
-2. Task-specific fine-tuning (if needed)
+2. **Task-specific fine-tuning (if needed)**
   - Router: intent classification fine-tuning
   - Parameter extraction: structured NER-style fine-tuning
   - Use lightweight approaches (LoRA / adapters)
-3. When to fine-tune
+3. **When to fine-tune**
   - Only after collecting sufficient real traffic
   - Only if prompt tuning and validation are insufficient
-4. Alternative
+4. **Alternative**
   - Swap proprietary LLM with an open-source model if required
   - Keep the same orchestration and validation layers
 
 ## Scaling to Hundreds of API Endpoints
 To scale this approach:
 - **Endpoint Registry**
+
 Central metadata describing each API’s capabilities and parameters.
 - **Capability-based routing**
+
 Router selects APIs based on declared capabilities rather than hardcoded names.
 - **Planner–Executor pattern**
+
 Replace single-step routing with multi-step planning for complex queries.
 - **OpenAPI-driven adapters**
+
 Auto-generate parameter schemas and clients from OpenAPI specs.
 - **Caching and rate limiting**
   - Cache metadata and frequent responses
