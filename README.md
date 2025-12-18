@@ -62,8 +62,7 @@ API Gateway → Lambda (TMDBMovieAgent) → OpenAI + TMDB APIs
 ## Fine-tuning/Model Adaptation Strategy
 Fine-tuning is **not performed by default** and would be introduced incrementally:
 1. **Prompt engineering first**
-
-Adjust router and extractor prompts based on observed failures.
+  Adjust router and extractor prompts based on observed failures.
 2. **Task-specific fine-tuning (if needed)**
   - Router: intent classification fine-tuning
   - Parameter extraction: structured NER-style fine-tuning
