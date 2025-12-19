@@ -4,7 +4,6 @@ import json
 from pydantic import BaseModel, ValidationError
 from dotenv import load_dotenv
 import os
-
 from agents.base import create_completion
 
 load_dotenv()

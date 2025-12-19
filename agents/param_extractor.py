@@ -4,7 +4,6 @@ from typing import Optional
 import re
 from dotenv import load_dotenv
 import os
-
 from agents.base import create_completion
 
 load_dotenv()
@@ -120,6 +119,7 @@ EXTRACTORS = {
     "discover_movies": DiscoverMoviesAgent,
     "search_person": SearchPersonAgent,
 }
+
 
 class ParameterExtractor:
     def extract(self, user_query: str, endpoint: str) -> ExtractedParams:

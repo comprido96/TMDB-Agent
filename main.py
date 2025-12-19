@@ -9,6 +9,11 @@ import json
 
 
 class StepResult(BaseModel):
+    """
+    Model for the outcome of each step execution of the pipeline.
+    The data field is populated when the step executes correctly,
+    otherwise an error is raised and caught in the error field.
+    """
     success: bool
     data: Optional[Any] = None
     error: Optional[str] = None
@@ -97,6 +102,10 @@ class TMDBMovieAgent:
         }
 
     def _error_response(self, step_result: StepResult, user_query: str) -> Dict[str, Any]:
+        """
+        This method is used to unpack a faulty step result. A dictionary is returned with
+        the user input query, the error and some metadata.
+        """
         return {
             "query": user_query,
             "status": "failed",
@@ -106,6 +115,10 @@ class TMDBMovieAgent:
         }
 
     def _safe_route(self, query: str) -> StepResult:
+        """
+        Wrapper method around self.router.route that wraps the object returned
+        into a StepResult data model.
+        """
         try:
             decision = self.router.route(query)
             return StepResult(
@@ -123,6 +136,10 @@ class TMDBMovieAgent:
             )
     
     def _safe_extract(self, query: str, endpoint: str) -> StepResult:
+        """
+        Wrapper method around self.extractor.extract that wraps the object returned
+        into a StepResult data model.
+        """
         try:
             params = self.extractor.extract(query, endpoint)
             return StepResult(
@@ -137,6 +154,12 @@ class TMDBMovieAgent:
             )
 
     def _resolve_people(self, params: ExtractedParams) -> StepResult:
+        """
+        Utility method that resolves actor names from the user input query
+        to their IDs used in the TMDB database.
+        This method acts as a hidden step because it makes another call
+        to the TMDB API.
+        """
         if not params.with_people_names:
             return StepResult(success=True, data=params)
 
@@ -162,6 +185,10 @@ class TMDBMovieAgent:
             )
 
     def _safe_api_call(self, endpoint: str, params: ExtractedParams) -> StepResult:
+        """
+        Wrapper method around self.tmdb_client.make_request that wraps the object returned
+        into a StepResult data model.
+        """
         try:
             response = self.tmdb_client.make_request(endpoint, params)
             return StepResult(
@@ -176,6 +203,10 @@ class TMDBMovieAgent:
             )
     
     def _safe_parse(self, endpoint: str, response: Dict[str, Any]) -> StepResult:
+        """
+        Wrapper method around self.parser.parse_response that wraps the object returned
+        into a StepResult data model.
+        """
         try:
             normalized_data = self.parser.parse_response(endpoint, response)
             return StepResult(
@@ -190,6 +221,10 @@ class TMDBMovieAgent:
             )
     
     def _safe_generate_answer(self, query: str, data: Any, endpoint: str) -> StepResult:
+        """
+        Wrapper method around self.generator.generate_answer that wraps the object returned
+        into a StepResult data model.
+        """
         try:
             answer = self.generator.generate_answer(query, data, endpoint)
             return StepResult(

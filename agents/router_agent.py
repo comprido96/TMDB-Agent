@@ -3,7 +3,6 @@ from pydantic import BaseModel, ValidationError
 from typing import Literal
 from dotenv import load_dotenv
 import os
-
 from agents.base import create_completion
 
 load_dotenv()
