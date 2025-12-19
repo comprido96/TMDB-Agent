@@ -1,33 +1,6 @@
-"""
-TODO
-1. Mismatch between extracted fields and TMDB API
-
-Example:
-
-with_people: Optional[str]  # names
-
-
-But TMDB /discover/movie expects person IDs, not names.
-
-You partially acknowledge this elsewhere, but here the pipeline still leaks names downstream.
-
-This is the single biggest technical flaw in the agents layer.
-
-Best fix (recommended)
-
-Rename field to with_people_names
-
-Resolve names → IDs in a dedicated resolution step
-
-Only inject IDs into tmdb_client
-
-If you don’t implement it, document it clearly as a known limitation.
-"""
-
-
 from openai import OpenAI
 from pydantic import BaseModel
-from typing import Literal, Optional
+from typing import Optional
 import re
 from dotenv import load_dotenv
 import os

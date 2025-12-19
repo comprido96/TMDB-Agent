@@ -54,7 +54,6 @@ class RouterAgent:
             )
 
 
-
 if __name__ == "__main__":
     router = RouterAgent()
     decision = router.route("Find action movies from 2023 with Keanu Reeves")

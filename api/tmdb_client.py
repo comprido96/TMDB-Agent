@@ -57,15 +57,6 @@ class TMDBClient:
             parsed_params["with_genres"] = params.with_genres
         if params.with_people:
             parsed_params["with_people"] = params.with_people
-        
-        # if params.movie_id:
-        #     return self.tmdb_client.movie_details(params.movie_id)
-        # # Fallback: search for movie first
-        # search_result = self.tmdb_client.search_movie(query=params.query or "")
-        # if search_result.get("results"):
-        #     movie_id = search_result["results"][0]["id"]
-        #     return self.tmdb_client.movie_details(movie_id)
-        # return {"error": "Movie not found"}
 
         return parsed_params
 

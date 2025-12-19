@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from agents.router_agent import APIDecision, RouterAgent
+from agents.router_agent import RouterAgent
 from agents.param_extractor import ParameterExtractor, ExtractedParams
 from api.tmdb_client import TMDBClient
 from api.response_parser import ResponseParser

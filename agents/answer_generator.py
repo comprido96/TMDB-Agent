@@ -1,5 +1,5 @@
 from openai import OpenAI
-from typing import Dict, Any, List
+from typing import Dict, Any
 import json
 from pydantic import BaseModel, ValidationError
 from dotenv import load_dotenv
