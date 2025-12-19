@@ -1,7 +1,8 @@
 import json
+from typing import Dict
 
 
-def create_completion(client, system_prompt: str, user_prompt: str) -> dict:
+def create_completion(client, system_prompt: str, user_prompt: str) -> Dict:
         """Helper function to create a chat completion and parse JSON response"""
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-1106",

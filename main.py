@@ -42,8 +42,6 @@ class TMDBMovieAgent:
             return self._error_response(route_result, user_query)
 
         decision = route_result.data
-        print(f"   Decision: {decision.endpoint}")
-        print(f"   Reasoning: {decision.reasoning}")
 
         # Step 2: Parameter Extractor
         print("2️⃣ Parameter Extractor: Extracting parameters...")
@@ -52,7 +50,6 @@ class TMDBMovieAgent:
             return self._error_response(extract_result, user_query)
 
         params = extract_result.data
-        print(f"   Extracted: {params.model_dump()}")
 
         # Step 2.5: Resolve people names → IDs
         resolve_result = self._resolve_people(params)
@@ -67,7 +64,6 @@ class TMDBMovieAgent:
         if not api_call_result.success:
             return self._error_response(api_call_result, user_query)
         api_response = api_call_result.data
-        print(f"   API Response:\n{api_response}")
 
         # Step 4: Response Parsing
         print("4️⃣ Response Parser: Normalizing data...")
@@ -78,7 +74,6 @@ class TMDBMovieAgent:
         normalized_data = parse_result.data
         movies = normalized_data.get("movies", [])
         api_response_sample = movies[:2] if "movies" in normalized_data else normalized_data
-        print(f"   Normalized Data:\n{normalized_data}")
 
         # Step 5: Answer Generation
         print("5️⃣ Answer Generator: Creating structured answer...")
@@ -91,7 +86,6 @@ class TMDBMovieAgent:
             return self._error_response(answer_result, user_query)
         
         final_answer = answer_result.data
-        print(f"   Final Answer:\n{final_answer.model_dump()}")
 
         return {
             "query": user_query,
@@ -241,9 +235,7 @@ class TMDBMovieAgent:
 
 if __name__ == "__main__":
     import sys
-    from dotenv import load_dotenv
 
-    load_dotenv()
 
     agent = TMDBMovieAgent()
 

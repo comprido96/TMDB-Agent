@@ -1,0 +1,152 @@
+🔍 Processing query: 'Who are Alvin and the Chipmunks ?'
+1️⃣ Router Agent: Determining endpoint...
+2️⃣ Parameter Extractor: Extracting parameters...
+3️⃣ API Executor: Calling TMDB API...
+4️⃣ Response Parser: Normalizing data...
+5️⃣ Answer Generator: Creating structured answer...
+
+==================================================
+🎉 FINAL RESULT
+==================================================
+Query: Who are Alvin and the Chipmunks ?
+Endpoint used: search_movie
+
+📊 Extracted Parameters:
+  - query: Alvin and the Chipmunks
+
+🤖 AI Answer:
+Alvin and the Chipmunks is a movie franchise that follows the adventures of three singing chipmunks named Alvin, Simon, and Theodore, along with the Chipettes. The first movie was released in 2007, and the franchise includes several sequels such as 'Chipwrecked', 'The Squeakquel', 'The Road Chip', and 'Driving Dave Crazier'. The movies feature the chipmunks' mischievous antics, musical talents, and their relationship with their guardian, Dave Seville.
+
+📈 Data Summary:
+{
+  "total_movies": 5,
+  "first_movie_release_date": "2007-12-13",
+  "latest_movie_release_date": "2015-12-17",
+  "average_vote_average": 4.814,
+  "total_vote_count": 11711
+}
+
+🔗 Source: TMDB API
+📊 Confidence: 0.95
+
+
+========================================================================================================================
+
+🔍 Processing query: 'How many movies about Lord of the Rings have been made ? Which are them ?'
+1️⃣ Router Agent: Determining endpoint...
+2️⃣ Parameter Extractor: Extracting parameters...
+3️⃣ API Executor: Calling TMDB API...
+4️⃣ Response Parser: Normalizing data...
+5️⃣ Answer Generator: Creating structured answer...
+
+==================================================
+🎉 FINAL RESULT
+==================================================
+Query: How many movies about Lord of the Rings have been made ? Which are them ?
+Endpoint used: search_movie
+
+📊 Extracted Parameters:
+  - query: Lord of the Rings
+
+🤖 AI Answer:
+There have been five movies about Lord of the Rings. The movies are: The Lord of the Rings: The Fellowship of the Ring, The Lord of the Rings: The Two Towers, The Lord of the Rings: The Return of the King, The Lord of the Rings, and The Lord of the Rings: The Hunt for Gollum.
+
+📈 Data Summary:
+{
+  "total_movies": 5,
+  "movies": [
+    {
+      "title": "The Lord of the Rings: The Fellowship of the Ring",
+      "release_date": "2001-12-18"
+    },
+    {
+      "title": "The Lord of the Rings: The Two Towers",
+      "release_date": "2002-12-18"
+    },
+    {
+      "title": "The Lord of the Rings: The Return of the King",
+      "release_date": "2003-12-17"
+    },
+    {
+      "title": "The Lord of the Rings",
+      "release_date": "1978-11-15"
+    },
+    {
+      "title": "The Lord of the Rings: The Hunt for Gollum",
+      "release_date": "2027-12-16"
+    }
+  ]
+}
+
+
+==========================================================================================================================
+
+🔍 Processing query: 'What are the details of the movie Inception >'
+1️⃣ Router Agent: Determining endpoint...
+2️⃣ Parameter Extractor: Extracting parameters...
+3️⃣ API Executor: Calling TMDB API...
+4️⃣ Response Parser: Normalizing data...
+5️⃣ Answer Generator: Creating structured answer...
+
+==================================================
+🎉 FINAL RESULT
+==================================================
+Query: What are the details of the movie Inception >
+Endpoint used: search_movie
+
+📊 Extracted Parameters:
+  - query: Inception
+
+🤖 AI Answer:
+The movie 'Inception' was released on July 15, 2010. It is a popular film with a vote average of 8.371 and a total vote count of 38,361. The movie's overview describes a skilled thief who commits corporate espionage by infiltrating the subconscious of his targets and is offered a chance to regain his old life.
+
+📈 Data Summary:
+{
+  "release_date": "2010-07-15",
+  "popularity": 30.77,
+  "vote_average": 8.371,
+  "vote_count": 38361,
+  "overview": "Cobb, a skilled thief who commits corporate espionage by infiltrating the subconscious of his targets is offered a chance to regain his old life as payment for a task considered to be impossible: \"inc..."
+}
+
+🔗 Source: TMDB API
+📊 Confidence: 0.95
+
+
+==============================================================================================================================
+
+🔍 Processing query: 'Find comedy movies from 2008'
+1️⃣ Router Agent: Determining endpoint...
+2️⃣ Parameter Extractor: Extracting parameters...
+3️⃣ API Executor: Calling TMDB API...
+4️⃣ Response Parser: Normalizing data...
+5️⃣ Answer Generator: Creating structured answer...
+
+==================================================
+🎉 FINAL RESULT
+==================================================
+Query: Find comedy movies from 2008
+Endpoint used: discover_movies
+
+📊 Extracted Parameters:
+  - primary_release_year: 2008
+  - with_genres: 35
+
+🤖 AI Answer:
+Here are some comedy movies from 2008: 'Kung Fu Panda', 'Tropic Thunder', 'Madagascar: Escape 2 Africa', 'Horton Hears a Who!', and 'You Don't Mess with the Zohan'.
+
+📈 Data Summary:
+{
+  "total_comedy_movies_2008": 5,
+  "sample_movie": {
+    "title": "Kung Fu Panda",
+    "release_date": "2008-06-04",
+    "overview": "When the Valley of Peace is threatened, lazy Po the panda discovers his destiny as the \"chosen one\" and trains to become a kung fu hero, but transforming the unsleek slacker into a brave warrior won't...",
+    "popularity": 17.13,
+    "vote_average": 7.31
+  }
+}
+
+🔗 Source: TMDB API
+📊 Confidence: 0.95
+
